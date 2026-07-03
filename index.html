@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#081c20">
+
+    <title>Sparse Autoencoders for LoRA-Adapted CLIP Under Domain Shift</title>
+    <meta
+      name="description"
+      content="Project page for Sparse Autoencoders for LoRA-Adapted CLIP Under Domain Shift, an ICML Workshop 2026 submission studying when generic sparse autoencoders stop faithfully interpreting adapted CLIP models."
+    >
+    <meta
+      name="keywords"
+      content="sparse autoencoders, SAE, CLIP, LoRA, domain shift, interpretability, monosemanticity, DAMS, ICML"
+    >
+    <meta name="citation_title" content="Sparse Autoencoders for LoRA-Adapted CLIP Under Domain Shift">
+    <meta name="citation_conference_title" content="ICML Workshop">
+    <meta name="citation_publication_date" content="2026">
+    <meta name="citation_pdf_url" content="./assets/paper/sparse-autoencoders-lora-clip-domain-shift.pdf">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sparse Autoencoders for LoRA-Adapted CLIP Under Domain Shift">
+    <meta
+      property="og:description"
+      content="Generic SAE reuse becomes unreliable as adapted CLIP moves away from ImageNet-like data. Domain-matched SAEs recover fidelity, sparsity, and downstream utility."
+    >
+    <meta property="og:image" content="./assets/images/top-activating-neurons.png">
+    <meta property="og:image:alt" content="Comparison of top-activating images for generic and domain-matched sparse autoencoders.">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="./assets/css/site.css">
+    <script src="./assets/js/site.js" defer></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header" data-header>
+      <div class="shell nav-wrap">
+        <a class="brand" href="#top" aria-label="SAE Shift home">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span>SAE<span class="brand-slash">/</span>Shift</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="sr-only">Toggle navigation</span>
+          <span></span><span></span>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+          <a href="#overview">Overview</a>
+          <a href="#method">Method</a>
+          <a href="#results">Results</a>
+          <a href="#citation">Citation</a>
+          <a class="nav-paper" href="./assets/paper/sparse-autoencoders-lora-clip-domain-shift.pdf">
+            Paper <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" id="top">
+        <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
+        <div class="hero-glow hero-glow-two" aria-hidden="true"></div>
+        <div class="hero-grid shell">
+          <div class="hero-copy">
+            <p class="eyebrow"><span></span> ICML Workshop 2026 submission</p>
+            <h1>Sparse Autoencoders for <em>LoRA-Adapted CLIP</em> Under Domain Shift</h1>
+            <p class="hero-summary">
+              When CLIP adapts, its interpreter may need to adapt too. We test when a generic
+              sparse autoencoder stops being a faithful dictionary—and show that domain-matched
+              SAEs recover much of the lost fidelity.
+            </p>
+
+            <p class="author-line">Anonymous authors</p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="./assets/paper/sparse-autoencoders-lora-clip-domain-shift.pdf">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 2.75h7l4 4V21.25H7z"></path>
+                  <path d="M14 2.75v4h4M9.5 12h6M9.5 15.5h6"></path>
+                </svg>
+                Read the paper
+              </a>
+              <a class="button button-secondary" href="#results">Explore results <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+
+          <aside class="hero-card" aria-label="Central research question">
+            <p class="card-index">01 / Research question</p>
+            <p class="question">
+              Can an SAE trained on <span>base CLIP</span> still be trusted after LoRA adaptation
+              to a shifted domain?
+            </p>
+            <div class="signal">
+              <div>
+                <span class="signal-label">ImageNet-like</span>
+                <span class="signal-dot signal-near"></span>
+              </div>
+              <div class="signal-line" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div>
+                <span class="signal-label">Specialized</span>
+                <span class="signal-dot signal-far"></span>
+              </div>
+            </div>
+            <p class="card-answer">
+              <strong>Not automatically.</strong> Reliability falls as the target activation
+              distribution drifts from the one that trained the dictionary.
+            </p>
+          </aside>
+        </div>
+
+        <div class="shell hero-note">
+          <span class="note-number">7</span>
+          <span class="note-copy">main datasets<br>near → far shift</span>
+          <span class="note-rule"></span>
+          <span class="note-number">3</span>
+          <span class="note-copy">SAE-mediated<br>configurations</span>
+          <span class="note-rule"></span>
+          <span class="note-number">1</span>
+          <span class="note-copy">domain-aware<br>metric introduced</span>
+        </div>
+      </section>
+
+      <section class="section intro-section" id="overview">
+        <div class="shell two-column">
+          <div class="section-heading sticky-heading">
+            <p class="section-kicker">Why this matters</p>
+            <h2>A fixed dictionary can become a moving target.</h2>
+          </div>
+          <div class="prose large-prose">
+            <p>
+              Sparse autoencoders decompose dense CLIP activations into sparse latent features.
+              In practice, an SAE trained once on base-model activations is often reused after
+              downstream adaptation. That convenience hides a strong assumption: the same feature
+              dictionary must remain faithful after the model changes.
+            </p>
+            <p>
+              We examine that assumption for CLIP ViT-B/16 adapted with LoRA across visual domains
+              ranging from Caltech101 and Oxford Pets to satellite and medical imagery. We measure
+              reconstruction fidelity, sparsity, latent usage, class selectivity, and classification
+              accuracy after SAE reconstruction.
+            </p>
+            <div class="takeaway">
+              <span class="takeaway-icon" aria-hidden="true">↳</span>
+              <p>
+                <strong>Practical rule:</strong> SAE reuse is a hypothesis to test, not a guarantee
+                inherited from the backbone architecture.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section figure-section">
+        <div class="shell">
+          <div class="figure-frame reveal">
+            <div class="figure-topline">
+              <p>Qualitative evidence</p>
+              <span>Figure 1</span>
+            </div>
+            <img
+              src="./assets/images/top-activating-neurons.png"
+              alt="Three pipelines compare a generic SAE on the base model, the same generic SAE after fine-tuning, and a domain-matched SAE after fine-tuning. Domain-matched top activations align with the target concepts."
+              width="1878"
+              height="952"
+              loading="lazy"
+            >
+            <p class="caption">
+              Top-activating images for representative neurons. The SAE trained on adapted
+              activations captures target-domain semantics more faithfully than reusing the generic
+              SAE on either base or adapted representations.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section method-section" id="method">
+        <div class="shell">
+          <div class="section-heading centered-heading">
+            <p class="section-kicker">Experimental design</p>
+            <h2>Same adapted model. Two possible dictionaries.</h2>
+            <p>
+              The key comparison holds the LoRA-adapted CLIP encoder fixed and changes only the SAE
+              used to reconstruct its activations.
+            </p>
+          </div>
+
+          <div class="pipeline" aria-label="Three evaluated configurations">
+            <article class="pipeline-card">
+              <div class="pipeline-meta">
+                <span>Baseline</span><span>ZS + G-SAE</span>
+              </div>
+              <div class="pipeline-visual">
+                <div class="model-chip">Base<br>CLIP</div>
+                <span class="arrow" aria-hidden="true">→</span>
+                <div class="sae-chip generic">Generic<br>SAE</div>
+              </div>
+              <p>Base CLIP reconstructed through an SAE trained on base, ImageNet-like activations.</p>
+            </article>
+
+            <article class="pipeline-card pipeline-card-alert">
+              <div class="pipeline-meta">
+                <span>Reuse test</span><span>FT + G-SAE</span>
+              </div>
+              <div class="pipeline-visual">
+                <div class="model-chip adapted">LoRA<br>CLIP</div>
+                <span class="arrow" aria-hidden="true">→</span>
+                <div class="sae-chip generic">Generic<br>SAE</div>
+              </div>
+              <p>The adapted encoder is interpreted with the unchanged generic dictionary.</p>
+            </article>
+
+            <article class="pipeline-card pipeline-card-success">
+              <div class="pipeline-meta">
+                <span>Domain matched</span><span>FT + FT-SAE</span>
+              </div>
+              <div class="pipeline-visual">
+                <div class="model-chip adapted">LoRA<br>CLIP</div>
+                <span class="arrow" aria-hidden="true">→</span>
+                <div class="sae-chip matched">FT<br>SAE</div>
+              </div>
+              <p>The SAE is retrained on activations from the adapted model and target domain.</p>
+            </article>
+          </div>
+
+          <div class="dataset-strip" aria-label="Datasets ordered by MMD from ImageNet">
+            <div class="dataset-strip-label">
+              <span>MMD from ImageNet</span>
+              <strong>Near</strong>
+            </div>
+            <div class="dataset-track">
+              <span style="--shift: 3%">Caltech101<small>.028</small></span>
+              <span style="--shift: 10%">Pets<small>.029</small></span>
+              <span style="--shift: 27%">DTD<small>.090</small></span>
+              <span style="--shift: 39%">UCF101<small>.126</small></span>
+              <span style="--shift: 67%">EuroSAT<small>.291</small></span>
+              <span style="--shift: 88%">ChestMNIST<small>.410</small></span>
+              <span style="--shift: 98%">PathMNIST<small>.423</small></span>
+            </div>
+            <div class="dataset-strip-label dataset-strip-end">
+              <strong>Far</strong>
+              <span>domain shift</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section results-section" id="results">
+        <div class="shell">
+          <div class="section-heading results-heading">
+            <div>
+              <p class="section-kicker">Core findings</p>
+              <h2>Domain-matched SAEs recover what generic reuse loses.</h2>
+            </div>
+            <p>
+              The gains appear in both task performance and representation diagnostics, becoming
+              especially clear on shifted texture, satellite, and medical domains.
+            </p>
+          </div>
+
+          <div class="stat-grid">
+            <article class="stat-card">
+              <p class="stat-value">92<span>%</span></p>
+              <p class="stat-label">accuracy recovery</p>
+              <p>on EuroSAT after replacing the generic SAE with a domain-matched SAE.</p>
+            </article>
+            <article class="stat-card">
+              <p class="stat-value">.762<span>→</span>.415</p>
+              <p class="stat-label">NMSE on DTD</p>
+              <p>a 45.5% reduction in normalized reconstruction error.</p>
+            </article>
+            <article class="stat-card">
+              <p class="stat-value">125<span>→</span>15</p>
+              <p class="stat-label">active latents on EuroSAT</p>
+              <p>showing a far more compact, domain-specific representation.</p>
+            </article>
+            <article class="stat-card stat-card-accent">
+              <p class="stat-value">+.298</p>
+              <p class="stat-label">DAMS on PathMNIST</p>
+              <p>while the standard monosemanticity score moves by only +.040.</p>
+            </article>
+          </div>
+
+          <div class="results-table-wrap reveal">
+            <div class="table-heading">
+              <div>
+                <p class="section-kicker">Downstream accuracy</p>
+                <h3>Accuracy after SAE reconstruction</h3>
+              </div>
+              <p>Best SAE-mediated result in each row is highlighted.</p>
+            </div>
+            <div class="table-scroll" tabindex="0" aria-label="Scrollable results table">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Dataset</th>
+                    <th scope="col">Shift</th>
+                    <th scope="col">MMD</th>
+                    <th scope="col">Adapted CLIP</th>
+                    <th scope="col">FT + G-SAE</th>
+                    <th scope="col">FT + FT-SAE</th>
+                    <th scope="col">Recovery</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row">Caltech101</th><td><span class="tier near">Near</span></td><td>.028</td><td>96.1</td><td>93.2</td><td class="best">95.6</td><td>83%</td></tr>
+                  <tr><th scope="row">Oxford Pets</th><td><span class="tier near">Near</span></td><td>.029</td><td>93.5</td><td>89.7</td><td class="best">92.7</td><td>79%</td></tr>
+                  <tr><th scope="row">DTD</th><td><span class="tier mid">Mid</span></td><td>.090</td><td>72.0</td><td>66.8</td><td class="best">71.1</td><td>83%</td></tr>
+                  <tr><th scope="row">UCF101</th><td><span class="tier mid">Mid</span></td><td>.126</td><td>77.6</td><td>71.3</td><td class="best">75.9</td><td>73%</td></tr>
+                  <tr><th scope="row">EuroSAT</th><td><span class="tier far">Far</span></td><td>.291</td><td>90.8</td><td>85.9</td><td class="best">90.4</td><td>92%</td></tr>
+                  <tr><th scope="row">ChestMNIST</th><td><span class="tier far">Far</span></td><td>.410</td><td>68.2</td><td>63.4</td><td class="best">66.9</td><td>73%</td></tr>
+                  <tr><th scope="row">PathMNIST</th><td><span class="tier far">Far</span></td><td>.423</td><td>90.5</td><td>84.1</td><td class="best">87.6</td><td>55%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="table-note">
+              Recovery = (FT+FT-SAE − FT+G-SAE) / (FT − FT+G-SAE). Values are percentages.
+            </p>
+          </div>
+
+          <div class="diagnostic-grid">
+            <div class="diagnostic-copy">
+              <p class="section-kicker">Beyond accuracy</p>
+              <h3>Better reconstruction with fewer active features.</h3>
+              <p>
+                Across the seven main datasets, the domain-matched SAE generally reduces NMSE,
+                improves cosine similarity, and sharply lowers L0 on shifted domains.
+              </p>
+              <p>
+                PathMNIST is the important exception: cosine similarity falls even as downstream
+                accuracy rises. Useful medical-domain directions can move away from the geometry of
+                base CLIP, so no single diagnostic is sufficient.
+              </p>
+            </div>
+            <figure class="diagnostic-figure reveal">
+              <img
+                src="./assets/images/sae-diagnostics.png"
+                alt="Four line charts compare generic and fine-tuned SAEs across seven datasets using NMSE, dead-neuron fraction, cosine similarity, and L0."
+                width="2370"
+                height="1655"
+                loading="lazy"
+              >
+              <figcaption>
+                CLIP-only SAE diagnostics, ordered from near- to far-domain datasets.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dams-section" id="dams">
+        <div class="shell dams-grid">
+          <div class="section-heading">
+            <p class="section-kicker">New metric</p>
+            <h2>DAMS asks whether a feature is useful for this domain.</h2>
+            <p>
+              Standard monosemanticity can reward a broad catch-all latent if its top images happen
+              to look coherent. The Domain-Aware Monosemanticity Score adds coverage and
+              class-discriminative structure.
+            </p>
+          </div>
+
+          <div class="equation-card">
+            <p class="equation">
+              <span>DAMS</span> = EC <b>[</b> α · CSS<sub>norm</sub> + (1 − α) · FSS <b>]</b>
+            </p>
+            <div class="term-list">
+              <div><span>EC</span><p><strong>Effective coverage</strong> penalizes dead and indiscriminate neurons.</p></div>
+              <div><span>CSS</span><p><strong>Class separability</strong> measures between-class versus within-class structure.</p></div>
+              <div><span>FSS</span><p><strong>Feature specificity</strong> rewards class-pure, low-entropy latent firing.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shell dams-bars">
+          <div class="bars-heading">
+            <h3>Domain-matched dictionaries become more selective where it matters.</h3>
+            <p>DAMS: G-SAE vs. FT-SAE</p>
+          </div>
+          <div class="bar-table">
+            <div class="bar-row">
+              <p>DTD</p>
+              <div class="bar-pair">
+                <span class="bar generic-bar" style="--value: 30%"><i>.300</i></span>
+                <span class="bar matched-bar" style="--value: 58.5%"><i>.585</i></span>
+              </div>
+              <strong>+.285</strong>
+            </div>
+            <div class="bar-row">
+              <p>UCF101</p>
+              <div class="bar-pair">
+                <span class="bar generic-bar" style="--value: 67.8%"><i>.678</i></span>
+                <span class="bar matched-bar" style="--value: 81.8%"><i>.818</i></span>
+              </div>
+              <strong>+.140</strong>
+            </div>
+            <div class="bar-row">
+              <p>FGVC</p>
+              <div class="bar-pair">
+                <span class="bar generic-bar" style="--value: 28%"><i>.280</i></span>
+                <span class="bar matched-bar" style="--value: 50%"><i>.500</i></span>
+              </div>
+              <strong>+.220</strong>
+            </div>
+            <div class="bar-row">
+              <p>PathMNIST</p>
+              <div class="bar-pair">
+                <span class="bar generic-bar" style="--value: 68.2%"><i>.682</i></span>
+                <span class="bar matched-bar" style="--value: 98%"><i>.980</i></span>
+              </div>
+              <strong>+.298</strong>
+            </div>
+          </div>
+          <div class="legend" aria-label="Chart legend">
+            <span><i class="legend-generic"></i>Generic SAE</span>
+            <span><i class="legend-matched"></i>Domain-matched SAE</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section conclusion-section">
+        <div class="shell conclusion-grid">
+          <p class="section-kicker">Conclusion</p>
+          <div>
+            <h2>Adapt the interpreter when the representation drifts.</h2>
+            <p>
+              Generic SAEs should not be reused by default after LoRA adaptation. Check reconstruction,
+              sparsity, downstream utility, and target-domain selectivity; retrain the SAE when those
+              signals reveal a mismatch.
+            </p>
+          </div>
+          <a class="circle-link" href="./assets/paper/sparse-autoencoders-lora-clip-domain-shift.pdf" aria-label="Read the full paper">
+            <span>Full paper</span>
+            <b aria-hidden="true">↗</b>
+          </a>
+        </div>
+      </section>
+
+      <section class="section citation-section" id="citation">
+        <div class="shell citation-grid">
+          <div>
+            <p class="section-kicker">Reference</p>
+            <h2>Citation</h2>
+            <p>The manuscript is currently anonymized. Please update this entry after de-anonymization.</p>
+          </div>
+          <div class="code-block">
+            <button class="copy-button" type="button" data-copy aria-label="Copy BibTeX">Copy</button>
+            <pre><code id="bibtex">@inproceedings{anonymous2026saeshift,
+  title     = {Sparse Autoencoders for LoRA-Adapted CLIP
+               Under Domain Shift},
+  author    = {Anonymous},
+  booktitle = {ICML Workshop},
+  year      = {2026}
+}</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <a class="brand footer-brand" href="#top">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span>SAE<span class="brand-slash">/</span>Shift</span>
+        </a>
+        <p>Project page for an anonymized ICML Workshop 2026 submission.</p>
+        <p>
+          Website structure inspired by the
+          <a href="https://nerfies.github.io/">Nerfies project page</a>.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
